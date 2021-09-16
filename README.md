@@ -12,6 +12,7 @@
     - range of `age`
     - `sex`
     - and `name`
+- Pagination is required
 - Show more information as `modal` when click the avatar
 - The site should be responsive 
 
