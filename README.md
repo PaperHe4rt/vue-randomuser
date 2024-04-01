@@ -12,7 +12,8 @@
     - range of `age`
 - Pagination is required
 - Show more information as `modal` when click the avatar
-- The site should be responsive 
+- The site should be responsive
+- using TypeScript will be your bonus point
 
 Show us what you can do :) Don't spend too much time on designing your website.
 
