@@ -103,32 +103,6 @@
     return Math.ceil(displayData.value.length / 8);
   });
 
-  const receivedTotalResult = (value: number) => {
-    totalResult.value = value;
-    getRandomUser();
-  };
-
-  async function getRandomUser() {
-    const res = (await apiService.get(
-      `?page=${currentPage.value}&results=${totalResult.value}` //use &seed=abc in case u wanna see the same result everytime
-    )) as {
-      data: { results: IUser[]; info: { results: number } };
-      message: string;
-    };
-
-    if (res && res.data.results.length > 0) {
-      userData.value = res.data.results;
-      displayData.value = userData.value;
-    } else {
-      Notify.create({
-        message: res.message,
-        type: 'negative',
-        position: 'center',
-        timeout: 3000,
-      });
-    }
-  }
-
   const filterAgeByRange = () => {
     if (ageRange) {
       displayData.value = userData.value.filter((user) => {
@@ -168,6 +142,32 @@
       getRandomUser();
     }
   };
+
+  const receivedTotalResult = (value: number) => {
+    totalResult.value = value;
+    getRandomUser();
+  };
+
+  async function getRandomUser() {
+    const res = (await apiService.get(
+      `?page=${currentPage.value}&results=${totalResult.value}` //use &seed=abc in case u wanna see the same result everytime
+    )) as {
+      data: { results: IUser[]; info: { results: number } };
+      message: string;
+    };
+
+    if (res && res.data.results.length > 0) {
+      userData.value = res.data.results;
+      displayData.value = userData.value;
+    } else {
+      Notify.create({
+        message: res.message,
+        type: 'negative',
+        position: 'center',
+        timeout: 3000,
+      });
+    }
+  }
 
   onMounted(async () => {
     await getRandomUser();
