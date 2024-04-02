@@ -9,8 +9,20 @@
         dense
         v-model="ageInput"
         label="Filter by age"
-        @update:model-value="filterByAge()"
+        @update:model-value="filterByAge"
         type="number"
+      />
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
+      <span>Age Range</span>
+      <q-range
+        v-model="ageRange"
+        :min="0"
+        :max="100"
+        :step="5"
+        label
+        color="deep-orange"
+        @update:model-value="filterAgeByRange"
       />
     </div>
   </div>
@@ -18,7 +30,7 @@
   <div class="row q-col-gutter-md">
     <div
       class="col-xs-6 col-sm-6 col-md-4 col-lg-3 f-17"
-      v-for="(item, index) in userData"
+      v-for="(item, index) in displayData"
       :key="index"
     >
       <q-card
@@ -70,12 +82,17 @@
   import { IUser } from 'src/components/models';
 
   const userData = ref<IUser[]>([]);
+  const displayData = ref<IUser[]>([]);
   const currentPage = ref(1);
 
   const totalResult = ref(16);
   const userModal = ref(false);
   let selectedUser = reactive({});
-  const ageInput = ref('');
+  const ageInput = ref(0);
+  const ageRange = ref({
+    min: 0,
+    max: 100,
+  });
 
   const openUserModal = (user: IUser) => {
     selectedUser = user;
@@ -83,7 +100,7 @@
   };
 
   const maxPage = computed(() => {
-    return Math.ceil(userData.value.length / 8);
+    return Math.ceil(displayData.value.length / 8);
   });
 
   const receivedTotalResult = (value: number) => {
@@ -101,6 +118,7 @@
 
     if (res && res.data.results.length > 0) {
       userData.value = res.data.results;
+      displayData.value = userData.value;
     } else {
       Notify.create({
         message: res.message,
@@ -111,19 +129,36 @@
     }
   }
 
-  function filterByAge() {
+  const filterAgeByRange = () => {
+    if (ageRange) {
+      displayData.value = userData.value.filter((user) => {
+        const userAge = user.dob.age;
+        return userAge >= ageRange.value.min && userAge <= ageRange.value.max;
+      });
+
+      if (displayData.value.length <= 0) {
+        Notify.create({
+          message: 'No users found within the specified age range',
+          type: 'negative',
+          position: 'center',
+          timeout: 1000,
+        });
+      }
+    }
+  };
+
+  const filterByAge = () => {
     if (ageInput.value) {
-      const filteredData = userData.value.filter((i: IUser) => {
+      ageInput.value = 0;
+      displayData.value = userData.value.filter((i: IUser) => {
         const inputAge = String(ageInput.value);
         const userAge = String(i.dob.age);
         return userAge.includes(inputAge);
       });
 
-      if (filteredData.length > 0) {
-        userData.value = filteredData;
-      } else {
+      if (displayData.value.length <= 0) {
         Notify.create({
-          message: 'ไม่พบ User ตามอายุดังกล่าว',
+          message: 'No users found within the specified age range',
           type: 'negative',
           position: 'center',
           timeout: 1000,
@@ -132,7 +167,7 @@
     } else {
       getRandomUser();
     }
-  }
+  };
 
   onMounted(async () => {
     await getRandomUser();
