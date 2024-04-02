@@ -1,9 +1,7 @@
 # User Randomizer (user-randomize)
 
-A Quasar Project
 
 ## Install the dependencies
-
 ```bash
 yarn
 # or
