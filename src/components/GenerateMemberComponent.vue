@@ -93,7 +93,7 @@
 
   async function getRandomUser() {
     const res = (await apiService.get(
-      `?page=${currentPage.value}&results=${totalResult.value}&seed=abc`
+      `?page=${currentPage.value}&results=${totalResult.value}` //use &seed=abc in case u wanna see the same result everytime
     )) as {
       data: { results: IUser[]; info: { results: number } };
       message: string;
@@ -125,7 +125,7 @@
         Notify.create({
           message: 'ไม่พบ User ตามอายุดังกล่าว',
           type: 'negative',
-          position: 'bottom',
+          position: 'center',
           timeout: 1000,
         });
       }
