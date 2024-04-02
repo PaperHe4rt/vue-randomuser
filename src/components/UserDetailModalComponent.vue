@@ -15,7 +15,7 @@
         </div>
 
         <div class="row q-col-gutter-md">
-          <div class="col-4">
+          <div class="col-12 col-sm-12 col-md-2 col-lg-2">
             <span>Title</span>
             <q-input
               outlined
@@ -24,7 +24,7 @@
               bg-color="white"
             />
           </div>
-          <div class="col-4">
+          <div class="col-12 col-sm-12 col-md-5 col-lg-5">
             <span>First Name</span>
             <q-input
               outlined
@@ -33,7 +33,7 @@
               bg-color="white"
             />
           </div>
-          <div class="col-4">
+          <div class="col-12 col-sm-12 col-md-5 col-lg-5">
             <span>Last Name</span>
             <q-input outlined dense v-model="user.name.last" bg-color="white" />
           </div>
@@ -47,12 +47,12 @@
             />
           </div>
 
-          <div class="col-6">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6">
             <span>Email</span>
             <q-input outlined dense v-model="user.email" bg-color="white" />
           </div>
 
-          <div class="col-6">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6">
             <span>Phone</span>
             <q-input outlined dense v-model="user.phone" bg-color="white" />
           </div>
@@ -63,13 +63,41 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps } from 'vue';
+  import { defineProps, ref, onMounted } from 'vue';
   import { IUser } from 'src/components/models';
 
   const props = defineProps<{
     userdetail: IUser;
   }>();
 
-  const user = props.userdetail;
-  user.fulladdress = `${user.location.street.number} ${user.location.street.name} ${user.location.city} ${user.location.state} ${user.location.postcode}`;
+  const user = ref(props.userdetail);
+  user.value.fulladdress = '';
+
+  function fulladdress() {
+    for (const [key, value] of Object.entries(user.value.location)) {
+      console.log('key, value', key);
+      console.log('value', value);
+      if (
+        key === 'street' ||
+        key === 'location' ||
+        key === 'state' ||
+        key === 'country' ||
+        key === 'postcode'
+      ) {
+        if (typeof value === 'object') {
+          for (const subKey in value) {
+            user.value.fulladdress += `${value[subKey]} `;
+          }
+        } else {
+          user.value.fulladdress += `${value} `;
+        }
+      }
+
+      console.log(user.value.fulladdress);
+    }
+  }
+
+  onMounted(() => {
+    fulladdress();
+  });
 </script>
